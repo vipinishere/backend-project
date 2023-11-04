@@ -1,0 +1,16 @@
+{
+	"name": "backend-project",
+	"version": "1.0.0",
+	"description": "backend project with javascript.",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon src/index.js"
+	},
+	"author": "vipinishere",
+	"license": "ISC",
+	"devDependencies": {
+		"nodemon": "^3.0.1",
+		"prettier": "^3.0.3"
+	}
+}
