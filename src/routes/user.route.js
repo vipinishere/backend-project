@@ -1,8 +1,14 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { registerUser, loginUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
+
+router.route("/register").get((req, res) => {
+	res.status(200).json({
+		message: "this is working!",
+	});
+});
 
 router.route("/register").post(
 	upload.fields([
@@ -17,10 +23,7 @@ router.route("/register").post(
 	]),
 	registerUser
 );
-router.route("/register").get((req, res) => {
-	res.status(200).json({
-		message: "ok",
-	});
-});
+
+router.route("/login").post(loginUser);
 
 export default router;
