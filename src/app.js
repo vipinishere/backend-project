@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import logger from "morgan";
 
 //route
 
@@ -24,6 +25,7 @@ app.use(
 );
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(logger("dev"));
 
 // routes
 import userRoute from "./routes/user.route.js";
