@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import logger from "morgan";
+import { ApiError } from "./utils/ApiError.js";
 
 //route
 
@@ -37,4 +38,13 @@ app.get("/", (req, res) => {
 	});
 });
 
+app.use((err, req, res, next) => {
+	if (err instanceof ApiError) {
+		// Handle the custom error class
+		return res.status(err.statusCode).json(err);
+	} else {
+		// Handle other types of errors
+		return res.status(500).json({ error: "Internal Server Error" });
+	}
+});
 export default app;

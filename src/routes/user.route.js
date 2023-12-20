@@ -3,17 +3,12 @@ import {
 	registerUser,
 	loginUser,
 	logoutUser,
+	refreshAccessToken,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-
-router.route("/register").get((req, res) => {
-	res.status(200).json({
-		message: "this is working!",
-	});
-});
 
 router.route("/register").post(
 	upload.fields([
@@ -29,12 +24,11 @@ router.route("/register").post(
 	registerUser
 );
 
-router.route("/login").get((req, res) => {
-	res.status(200).send("this is a login get route");
-});
-
 router.route("/login").post(loginUser);
 
+// secure route
 router.route("/logout").post(verifyJWT, logoutUser);
+
+router.route("/refreshtoken").post(refreshAccessToken);
 
 export default router;
