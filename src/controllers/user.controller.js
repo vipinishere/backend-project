@@ -7,6 +7,7 @@ import { validateEmail } from "../utils/validation.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { COOKIE_OPTIONS } from "../constants.js";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) => {
 	try {
@@ -425,6 +426,62 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 		);
 });
 
+const getWatchHistory = asyncHandler(async (req, res) => {
+	const user = User.aggregate([
+		{
+			$match: {
+				_id: mongoose.Types.ObjectId(req.user._id),
+			},
+		},
+		{
+			$lookup: {
+				from: "videos",
+				localField: "watchHistory",
+				foreignField: "_id",
+				as: "watchHistory",
+				pipeline: [
+					{
+						$lookup: {
+							from: "users",
+							localField: "owner",
+							foreignField: "_id",
+							as: "owner",
+							pipeline: [
+								{
+									$project: {
+										fullName: 1,
+										username: 1,
+										avatar: 1,
+									},
+								},
+							],
+						},
+					},
+					{
+						$addFields: {
+							owner: {
+								$first: "$owner",
+							},
+						},
+					},
+				],
+			},
+		},
+	]);
+
+	return res.status(200).json(new ApiResponse(200, user[0].watchHistory));
+});
+
+const deleteYourAccount = asyncHandler(async (req, res) => {
+	const data = await User.findByIdAndDelete({ _id: req.user._id });
+
+	return res
+		.status(200)
+		.clearCookie("accessToken")
+		.clearCookie("refreshToken")
+		.json(new ApiResponse(200, data, "user delete successfully"));
+});
+
 export {
 	registerUser,
 	loginUser,
@@ -435,4 +492,7 @@ export {
 	updateAccountDetails,
 	updateUserAvatar,
 	updateUserCoverImage,
+	getUserChannelProfile,
+	getWatchHistory,
+	deleteYourAccount,
 };
